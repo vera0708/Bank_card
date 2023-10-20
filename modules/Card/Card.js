@@ -68,14 +68,14 @@ export const Card = () => {
     number.name = 'number';
     number.setAttribute('id', 'cardNumber');
     number.placeholder = 'xxxx xxxx xxxx xxxx';
-    number.pattern = '\d{16}';
+    number.pattern = "[0-9]{4}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4}";
     number.title = 'enter 16 numbers'
     number.inputmode = "numeric";
     number.required = true;
     formInputNumber.append(numberLabel, number);
 
     number.addEventListener('input', () => {
-        number.value = number.value.replace('[0-9]{16}');
+        number.value = number.value.replace('[0-9]{4}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4}');
         cardNumber.textContent = number.value;
     });
 
