@@ -46,8 +46,14 @@ export const Card = () => {
     holder.type = 'text';
     holder.name = 'holder';
     holder.required = true;
-    holder.placeholder = "Surname Name";
+    // holder.pattern = "[A-z\s]+$";
+    // holder.inputmode = 'latin-name';
+    holder.placeholder = 'name  surname';
     formInputHolder.append(holderLabel, holder);
+
+    holder.addEventListener('input', () => {
+        cardName.textContent = holder.value.replace('[A-Za-z\s]+$').toUpperCase();
+    });
 
     const formInputNumber = document.createElement('div');
     formInputNumber.classList.add('form__input-wrap', 'form__input-wrap_number');
@@ -60,10 +66,18 @@ export const Card = () => {
     number.classList.add('input', 'input__number');
     number.type = 'text';
     number.name = 'number';
-    form.setAttribute('id', 'cardNumber');
+    number.setAttribute('id', 'cardNumber');
+    number.placeholder = 'xxxx xxxx xxxx xxxx';
+    number.pattern = '\d{16}';
+    number.title = 'enter 16 numbers'
+    number.inputmode = "numeric";
     number.required = true;
-    number.placeholder = "Card Number";
     formInputNumber.append(numberLabel, number);
+
+    number.addEventListener('input', () => {
+        number.value = number.value.replace('[0-9]{16}');
+        cardNumber.textContent = number.value;
+    });
 
     const formInputDate = document.createElement('div');
     formInputDate.classList.add('form__input-wrap', 'form__input-wrap_date');
@@ -75,9 +89,16 @@ export const Card = () => {
     const date = document.createElement('input');
     date.classList.add('input', 'input__date');
     date.type = 'text';
-    date.name = 'date';
+    date.pattern = "\d\d\+/\d\d";
+    // date.setAttribute('data-format', '**/**');
+    // date.setAttribute('data-mask', 'MM/YY');
     date.required = true;
     formInputDate.append(dateLabel, date);
+
+    date.addEventListener('input', () => {
+        date.value = date.value.replace('\d\d+\/\d\d');
+        cardDate.textContent = date.value;
+    });
 
     const formInputCvv = document.createElement('div');
     formInputCvv.classList.add('form__input-wrap', 'form__input-wrap_cvv');
@@ -90,10 +111,10 @@ export const Card = () => {
     cvv.classList.add('input', 'input__cvv');
     cvv.type = 'text';
     cvv.name = 'cvv';
+    cvv.value = cvv.value.replace('\d{3}');
+    cvv.title = 'enter 3 numbers only'
     cvv.required = true;
     formInputCvv.append(cvvLabel, cvv);
-    /* <button class=""></button>
-     */
 
     const formBtn = document.createElement('button');
     formBtn.classList.add('form__button');
@@ -107,16 +128,3 @@ export const Card = () => {
     wrapper.append(card);
     document.body.append(wrapper);
 };
-
-/*
- <div class="wrapper">
-    <div class="card">
-      </div>
-
-      <form action="#" class="form" id="form">
-
-      
-      </form>
-    </div>
-  </div> 
- */
