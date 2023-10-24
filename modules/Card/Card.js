@@ -34,6 +34,7 @@ export const Card = () => {
     form.classList.add('form');
     form.setAttribute('id', 'form');
 
+    // держатель карты
     const formInputHolder = document.createElement('div');
     formInputHolder.classList.add('form__input-wrap', 'form__input-wrap_holder');
 
@@ -46,15 +47,27 @@ export const Card = () => {
     holder.type = 'text';
     holder.name = 'holder';
     holder.required = true;
-    // holder.pattern = "[A-z\s]+$";
-    // holder.inputmode = 'latin-name';
-    holder.placeholder = 'name  surname';
+    // holder.pattern = "[A-Za-z\s]+$";
+
     formInputHolder.append(holderLabel, holder);
 
     holder.addEventListener('input', () => {
-        cardName.textContent = holder.value.replace('[A-Za-z\s]+$').toUpperCase();
+        holder.value = holder.value.replace(/[^A-Za-z\s]+$/ig, '').toUpperCase();
+        cardName.textContent = holder.value.toUpperCase();
     });
 
+    const mask = (value, limit, separator) => {
+        let output = [];
+        for (let i = 0; i < value.length; i++) {
+            if (i !== 0 && i % limit === 0) {
+                output.push(separator);
+            }
+            output.push(value[i]);
+        }
+        return output.join("");
+    };
+
+    // номер карты
     const formInputNumber = document.createElement('div');
     formInputNumber.classList.add('form__input-wrap', 'form__input-wrap_number');
 
@@ -67,18 +80,19 @@ export const Card = () => {
     number.type = 'text';
     number.name = 'number';
     number.setAttribute('id', 'cardNumber');
-    number.placeholder = 'xxxx xxxx xxxx xxxx';
-    number.pattern = "[0-9]{4}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4}";
-    number.title = 'enter 16 numbers'
-    number.inputmode = "numeric";
+    number.pattern = "[0-9]";
+    number.title = 'enter 16 numbers';
+    number.setAttribute('maxlength', 19);
     number.required = true;
     formInputNumber.append(numberLabel, number);
 
     number.addEventListener('input', () => {
-        number.value = number.value.replace('[0-9]{4}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4}');
+        number.value = number.value.replace(/[^0-9]/ig, '');
+        number.value = mask(number.value, 4, " ")
         cardNumber.textContent = number.value;
     });
 
+    // дата карты
     const formInputDate = document.createElement('div');
     formInputDate.classList.add('form__input-wrap', 'form__input-wrap_date');
 
@@ -89,17 +103,20 @@ export const Card = () => {
     const date = document.createElement('input');
     date.classList.add('input', 'input__date');
     date.type = 'text';
-    date.pattern = "\d\d\+/\d\d";
-    // date.setAttribute('data-format', '**/**');
-    // date.setAttribute('data-mask', 'MM/YY');
+    date.pattern = /^\d{0,4}$/g;
+    date.setAttribute('maxlength', 5);
+    date.title = 'enter MMYY';
     date.required = true;
+
     formInputDate.append(dateLabel, date);
 
     date.addEventListener('input', () => {
-        date.value = date.value.replace('\d\d+\/\d\d');
+        date.value = date.value.replace(/[^\d]/g, '');
+        date.value = mask(date.value, 2, "/")
         cardDate.textContent = date.value;
     });
 
+    // cvv код
     const formInputCvv = document.createElement('div');
     formInputCvv.classList.add('form__input-wrap', 'form__input-wrap_cvv');
 
@@ -111,15 +128,47 @@ export const Card = () => {
     cvv.classList.add('input', 'input__cvv');
     cvv.type = 'text';
     cvv.name = 'cvv';
-    cvv.value = cvv.value.replace('\d{3}');
+    cvv.pattern = /^\d{0,3}$/g;
+    cvv.setAttribute('maxlength', 3);
     cvv.title = 'enter 3 numbers only'
     cvv.required = true;
+
     formInputCvv.append(cvvLabel, cvv);
+
+    cvv.addEventListener('input', () => {
+        cvv.value = cvv.value.replace(/\D/g, '');
+    });
 
     const formBtn = document.createElement('button');
     formBtn.classList.add('form__button');
     formBtn.textContent = 'CHECK OUT';
     formBtn.type = 'submit';
+
+    formBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (holder.value.indexOf(' ') === -1) {
+            alert('Card Holder should comtain name and surname');
+            return
+        };
+        const dateMMYY = date.value;
+        const dateYear = +dateMMYY.slice(3) + 2000;
+        const dateMonth = +dateMMYY.slice(0, 2);
+        console.log('dateMonth: ', dateMonth);
+
+        if (dateMonth > 12) {
+            alert('The month (in date) should be from 01 to 12');
+            return
+        };
+        let today = new Date();
+        let currentYear = today.getFullYear();
+        let currentMonth = today.getMonth() + 1;
+
+        if (dateYear < currentYear || dateYear === currentYear && dateMonth < currentMonth) {
+            alert('Sorry, your card is expired');
+            return
+        };
+        return
+    });
 
     form.append(formInputHolder, formInputNumber, formInputDate, formInputCvv, formBtn);
 
