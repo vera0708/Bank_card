@@ -153,7 +153,6 @@ export const Card = () => {
         const dateMMYY = date.value;
         const dateYear = +dateMMYY.slice(3) + 2000;
         const dateMonth = +dateMMYY.slice(0, 2);
-        console.log('dateMonth: ', dateMonth);
 
         if (dateMonth > 12) {
             alert('The month (in date) should be from 01 to 12');

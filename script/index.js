@@ -14,7 +14,7 @@ const CardRe = () => {
     const formInput = (nameBlock, nameText) =>
     (el('div', { className: `form__input-wrap form__input-wrap_${nameBlock}` },
         el('label', { className: `form__label form__${nameBlock}-label` }, `${nameText}`),
-        el('input', { className: `input input__${nameBlock}`, type: "text", name: `${nameBlock}`, required: true })
+        el('input', { className: `input input__${nameBlock}`, type: 'text', name: `${nameBlock}`, required: true })
     ));
 
     const formCard = el('form', { className: 'form' },
@@ -22,7 +22,7 @@ const CardRe = () => {
         formInput('number', 'cardNumber'),
         formInput('date', 'Card Expiry'),
         formInput('cvv', 'CVV'),
-        el('button', { className: 'form__button' }, 'CHECK OUT')
+        el('button', { className: 'form__button', type: 'submit' }, formSubmit, 'CHECK OUT')
     );
 
     const card = el('div', { className: 'card' },
@@ -75,6 +75,33 @@ const CardRe = () => {
     cvv.addEventListener('input', () => {
         cvv.value = cvv.value.replace(/\D/g, '');
     });
+
+    function formSubmit(el) {
+        el.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (holder.value.indexOf(' ') === -1) {
+                alert('Card Holder should comtain name and surname');
+                return
+            };
+            const dateMMYY = date.value;
+            const dateYear = +dateMMYY.slice(3) + 2000;
+            const dateMonth = +dateMMYY.slice(0, 2);
+
+            if (dateMonth > 12) {
+                alert('The month (in date) should be from 01 to 12');
+                return
+            };
+            let today = new Date();
+            let currentYear = today.getFullYear();
+            let currentMonth = today.getMonth() + 1;
+
+            if (dateYear < currentYear || dateYear === currentYear && dateMonth < currentMonth) {
+                alert('Sorry, your card is expired');
+                return
+            };
+            return
+        });
+    }
 };
 
 setChildren(document.body, CardRe());
