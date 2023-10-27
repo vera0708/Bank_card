@@ -29,6 +29,8 @@ const CardRe = () => {
         className: 'input input__holder',
         type: 'text',
         name: 'holder',
+        maxlength: 27,
+        pattern: '[A-Za-z\s]+$',
         required: true
     });
 
