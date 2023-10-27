@@ -48,7 +48,6 @@ export const Card = () => {
     holder.name = 'holder';
     holder.required = true;
     // holder.pattern = "[A-Za-z\s]+$";
-
     formInputHolder.append(holderLabel, holder);
 
     holder.addEventListener('input', () => {

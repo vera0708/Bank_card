@@ -3,39 +3,16 @@
 // import Navigo from "navigo";
 import { el, setChildren } from '../node_modules/redom/dist/redom.es.js';
 
+const cardName = el('span', { className: 'card__name' }, 'John Doe')
+const cardNumber = el('span', { className: 'card__number' }, 'xxxx xxxx xxxx xxxx');
+const cardDate = el('span', { className: 'card__date' }, '04/24')
 const CardRe = () => {
     const creditCard = el('div', { className: 'credit-card' },
-        el('span', { className: 'card__number' }, 'xxxx xxxx xxxx xxxx'),
+        cardNumber,
         el('div', { className: 'card__personal' },
-            el('span', { className: 'card__name' }, 'John Doe'),
-            el('span', { className: 'card__date' }, '04/24')
+            cardName,
+            cardDate
         ));
-
-    const formInput = (nameBlock, nameText) =>
-    (el('div', { className: `form__input-wrap form__input-wrap_${nameBlock}` },
-        el('label', { className: `form__label form__${nameBlock}-label` }, `${nameText}`),
-        el('input', { className: `input input__${nameBlock}`, type: 'text', name: `${nameBlock}`, required: true })
-    ));
-
-    const formCard = el('form', { className: 'form' },
-        formInput('holder', 'Card Holder'),
-        formInput('number', 'cardNumber'),
-        formInput('date', 'Card Expiry'),
-        formInput('cvv', 'CVV'),
-        el('button', { className: 'form__button', type: 'submit' }, formSubmit, 'CHECK OUT')
-    );
-
-    const card = el('div', { className: 'card' },
-        el('p', { className: 'secure' }, 'Secure Checkout'),
-        creditCard,
-        formCard);
-    return el('div', { className: 'wrapper' }, card);
-
-    const holder = formInput('holder', 'Card Holder');
-    holder.addEventListener('input', () => {
-        holder.value = holder.value.replace(/[^A-Za-z\s]+$/ig, '').toUpperCase();
-        cardName.textContent = holder.value.toUpperCase();
-    });
 
     const mask = (value, limit, separator) => {
         let output = [];
@@ -48,42 +25,109 @@ const CardRe = () => {
         return output.join("");
     };
 
-    const number = formInput('number', 'cardNumber');
-    number.setAttribute('pattern', '[0-9]');
-    number.setAttribute('title', 'enter 16 numbers');
-    number.setAttribute('maxlength', 19);
-    number.addEventListener('input', () => {
-        number.value = number.value.replace(/[^0-9]/ig, '');
-        number.value = mask(number.value, 4, " ")
-        cardNumber.textContent = number.value;
+    const inputHolder = el('input', {
+        className: 'input input__holder',
+        type: 'text',
+        name: 'holder',
+        required: true
     });
 
-    const date = formInput('date', 'Card Expiry');
-    date.setAttribute('pattern', '/^\d{0,4}$/g');
-    date.setAttribute('title', 'enter MMYY');
-    date.setAttribute('maxlength', 5);
-    date.addEventListener('input', () => {
-        date.value = date.value.replace(/[^\d]/g, '');
-        date.value = mask(date.value, 2, "/")
-        cardDate.textContent = date.value;
+    function holderSubmit() {
+        inputHolder.addEventListener('input', () => {
+            inputHolder.value = inputHolder.value.replace(/[^A-Za-z\s]+$/ig, '').toUpperCase();
+            cardName.textContent = inputHolder.value.toUpperCase();
+        });
+    };
+
+    const inputNumber = el('input', {
+        className: 'input input__number',
+        type: 'text',
+        name: 'number',
+        pattern: /[^0-9]/ig,
+        maxlength: 19,
+        title: 'enter 16 numbers',
+        required: true
     });
 
-    const cvv = formInput('cvv', 'CVV');
-    cvv.setAttribute('pattern', '/^\d{0,3}$/g');
-    cvv.setAttribute('title', 'enter 3 numbers only');
-    cvv.setAttribute('maxlength', 3);
-    cvv.addEventListener('input', () => {
-        cvv.value = cvv.value.replace(/\D/g, '');
+    function numberSubmit() {
+        inputNumber.addEventListener('input', () => {
+            inputNumber.value = inputNumber.value.replace(/[^0-9]/ig, '');
+            inputNumber.value = mask(inputNumber.value, 4, " ")
+            cardNumber.textContent = inputNumber.value;
+        });
+    };
+
+    const inputDate = el('input', {
+        className: 'input input__date',
+        type: 'text',
+        name: 'date',
+        pattern: /^\d{0,4}$/g,
+        maxlength: 5,
+        title: 'enter MMYY',
+        required: true
     });
+
+    function dateSubmit() {
+        inputDate.addEventListener('input', () => {
+            inputDate.value = inputDate.value.replace(/[^\d]/g, '');
+            inputDate.value = mask(inputDate.value, 2, "/")
+            cardDate.textContent = inputDate.value;
+        });
+    };
+
+    const inputCvv = el('input', {
+        className: 'input input__cvv',
+        type: 'text',
+        name: 'cvv',
+        pattern: /^\d{0,3}$/g,
+        maxlength: 3,
+        title: 'enter 3 numbers only',
+        required: true
+    });
+
+    function cvvSubmit() {
+        inputCvv.addEventListener('input', () => {
+            inputCvv.value = inputCvv.value.replace(/\D/g, '');
+        });
+    };
+
+    const formCard = el('form', { className: 'form' },
+        el('div', { className: 'form__input-wrap form__input-wrap_holder' },
+            el('label', { className: 'form__label form__holder-label' }, 'Card Holder'),
+            inputHolder,
+            holderSubmit,
+        ),
+        el('div', { className: 'form__input-wrap form__input-wrap_number' },
+            el('label', { className: 'form__label form__number-label' }, 'Card Number'),
+            inputNumber,
+            numberSubmit,
+        ),
+        el('div', { className: 'form__input-wrap form__input-wrap_date' },
+            el('label', { className: 'form__label form__date-label' }, 'Card Expiry'),
+            inputDate,
+            dateSubmit,
+        ),
+        el('div', { className: 'form__input-wrap form__input-wrap_cvv' },
+            el('label', { className: 'form__label form__cvv-label' }, 'CVV'),
+            inputCvv,
+            cvvSubmit,
+        ),
+        el('button', { className: 'form__button', type: 'submit' }, formSubmit, 'CHECK OUT')
+    );
+
+    const card = el('div', { className: 'card' },
+        el('p', { className: 'secure' }, 'Secure Checkout'),
+        creditCard,
+        formCard);
 
     function formSubmit(el) {
         el.addEventListener('click', (e) => {
             e.preventDefault();
-            if (holder.value.indexOf(' ') === -1) {
+            if (inputHolder.value.indexOf(' ') === -1) {
                 alert('Card Holder should comtain name and surname');
                 return
             };
-            const dateMMYY = date.value;
+            const dateMMYY = inputDate.value;
             const dateYear = +dateMMYY.slice(3) + 2000;
             const dateMonth = +dateMMYY.slice(0, 2);
 
@@ -99,9 +143,11 @@ const CardRe = () => {
                 alert('Sorry, your card is expired');
                 return
             };
+            alert('Success, you card is validated');
             return
         });
     }
+    return el('div', { className: 'wrapper' }, card);
 };
 
 setChildren(document.body, CardRe());
